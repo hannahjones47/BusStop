@@ -159,15 +159,16 @@ public class BusStopDisplay {
         busesToDisplay.sort(Comparator.comparing(ExpectedBus::getTime));
         List<ExpectedBus> firstTenBuses = busesToDisplay.subList(0, Math.min(10, busesToDisplay.size()));
 
-        String[][] displayTableData = new String[firstTenBuses.size() + 1][4]; // +1 for the header
-        displayTableData[0] = new String[]{"Number", "Destination", "Due at", "Status"};
+        String[][] displayTableData = new String[firstTenBuses.size() + 1][5];
+        displayTableData[0] = new String[]{"Number","Route", "Destination", "Due at", "Status"};
 
         for (int i = 0; i < firstTenBuses.size(); i++) {
             ExpectedBus expectedBus = firstTenBuses.get(i);
-            displayTableData[i + 1][0] = expectedBus.routeNo;
-            displayTableData[i + 1][1] = expectedBus.destination;
-            displayTableData[i + 1][2] = expectedBus.time.toString();
-            displayTableData[i + 1][3] = getStatusDisplayValue(expectedBus.status, expectedBus.delay);
+            displayTableData[i + 1][0] = String.valueOf(i + 1);
+            displayTableData[i + 1][1] = expectedBus.routeNo;
+            displayTableData[i + 1][2] = expectedBus.destination;
+            displayTableData[i + 1][3] = expectedBus.time.toString();
+            displayTableData[i + 1][4] = getStatusDisplayValue(expectedBus.status, expectedBus.delay);
         }
 
         for (String[] rowData : displayTableData) {

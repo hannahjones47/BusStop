@@ -1,10 +1,8 @@
 package MetropolisBusStop.tests;
 
 import MetropolisBusStop.impl.BusStopDisplay;
-import MetropolisBusStop.impl.ExpectedBus;
 import MetropolisBusStop.impl.exceptions.RouteDoesNotCallHereException;
-import org.junit.jupiter.api.Test;
-import MetropolisBusStop.impl.Example;
+
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,20 +10,20 @@ import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ExampleTest {
+class Test {
     Path projectDir = Paths.get("").toAbsolutePath();
     File stopInfoFile = new File(projectDir.resolve("src/MetropolisBusStop/configurationData/stop_info.csv").toString());
     File routesFile = new File(projectDir.resolve("src/MetropolisBusStop/configurationData/routes.csv").toString());
     File timetableFile = new File(projectDir.resolve("src/MetropolisBusStop/configurationData/timetable.csv").toString());
     BusStopDisplay busStopDisplay;
 
-    @Test
+    @org.junit.jupiter.api.Test
     void createBusStopDisplay() {
         busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
         assertEquals(busStopDisplay.routes.size(), 8);
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     void testGetTimeOfNextBus() {
         busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
 
@@ -38,7 +36,7 @@ class ExampleTest {
         }
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     void testGetTimeOfNextBus2() {
         busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
 
@@ -51,7 +49,7 @@ class ExampleTest {
         }
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     void testGetTimeOfNextBus3() {
         busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
 
@@ -60,11 +58,11 @@ class ExampleTest {
         });
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     void testDisplay() {
         busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
 
-        busStopDisplay.display(LocalTime.of(7,0));
+        busStopDisplay.display(LocalTime.of(21,0)); // todo it doesnt esem to work if you input a time where there would be less than 10 buses coming after then that day.
     }
 }
 
