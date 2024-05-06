@@ -1,6 +1,7 @@
 package MetropolisBusStop.tests;
 
 import MetropolisBusStop.impl.BusStopDisplay;
+import MetropolisBusStop.impl.ExpectedBus;
 import org.junit.jupiter.api.Test;
 import MetropolisBusStop.impl.Example;
 import java.io.*;
@@ -30,6 +31,7 @@ class ExampleTest {
         File timetableFile = new File(projectDir.resolve("src/MetropolisBusStop/configurationData/timetable.csv").toString());
 
         BusStopDisplay busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
+
         assertEquals(busStopDisplay.routes.size(), 8);
     }
 }

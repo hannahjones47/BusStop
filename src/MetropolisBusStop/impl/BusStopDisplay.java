@@ -2,17 +2,14 @@ package MetropolisBusStop.impl;
 
 import java.io.*;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BusStopDisplay {
 
     String id;
     String name;
     public Map<String, Route> routes; // todo am i allowed to make that public??
-    Map<String, ExpectedBus> expectedBuses;
+    public Map<String, ExpectedBus> expectedBuses;
 
     public BusStopDisplay(File stopInfo, File routesFile, File ttInfo) { // todo do i have to name this create?
 
@@ -81,7 +78,28 @@ public class BusStopDisplay {
 
     public void addScheduledToExpected()
     {
-        // todo should add them ordered.
+        List<ExpectedBus> expectedBusList = new ArrayList<>();
+
+        this.routes.forEach((key, route) -> {
+            for (int i = 1; i < route.schedule.size(); i++) {
+                LocalTime time = route.schedule.get(i);
+                ExpectedBus expectedBus = new ExpectedBus(route.routeNo,
+                                                            i + 1,
+                                                            route.destination,
+                                                            BusStatus.onTime,
+                                                            time,
+                                                            0);
+                expectedBusList.add(expectedBus);
+            }
+        });
+
+        expectedBusList.sort(Comparator.comparing(ExpectedBus::getTime));
+
+        // todo check that the list is actually ordered
+        for (ExpectedBus expectedBus : expectedBusList) {
+            this.expectedBuses.put("R" + expectedBus.getRouteNo() + "J" + expectedBus.getJourneyNo(), expectedBus); // todo this key might need improving
+        }
+
 //todo dont know if this can go here bc it isnt listed on class diagrm , maybe need to put in constructor.
     }
 

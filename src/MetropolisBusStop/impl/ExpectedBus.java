@@ -27,4 +27,16 @@ public class ExpectedBus {
         this.time = time;
         this.delay = delay;
     }
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public String getRouteNo() {
+        return routeNo;
+    }
+
+    public int getJourneyNo() {
+        return journeyNo;
+    }
 }
