@@ -1,5 +1,7 @@
 package MetropolisBusStop.impl;
 
+import MetropolisBusStop.impl.exceptions.RouteDoesNotCallHereException;
+
 import java.io.*;
 import java.time.LocalTime;
 import java.util.*;
@@ -76,12 +78,13 @@ public class BusStopDisplay {
         }
     }
 
-    public void addScheduledToExpected()
-    {
+    private void addScheduledToExpected() {
+        this.expectedBuses = new HashMap<String, ExpectedBus>();
+
         List<ExpectedBus> expectedBusList = new ArrayList<>();
 
         this.routes.forEach((key, route) -> {
-            for (int i = 1; i < route.schedule.size(); i++) {
+            for (int i = 0; i < route.schedule.size(); i++) {
                 LocalTime time = route.schedule.get(i);
                 ExpectedBus expectedBus = new ExpectedBus(route.routeNo,
                                                             i + 1,
@@ -103,23 +106,89 @@ public class BusStopDisplay {
 //todo dont know if this can go here bc it isnt listed on class diagrm , maybe need to put in constructor.
     }
 
-    public List<Route> getCallingRoutes() {
-        // todo returns an unmodifiable collection of Routes served by the bus stop
-        return null;
+    public Map<String, Route> getCallingRoutes() {
+        // todo is this an unmodifiable collection ?
+        return this.routes;
     }
 
-    public List<LocalTime> getDepartureTimes() {
-        // todo gets the bus stop's timetable for the given route as an unmodifiable collection of times
-        return null;
+    public List<LocalTime> getDepartureTimes(String routeNo) throws RouteDoesNotCallHereException {
+
+        if (!this.routes.containsKey(routeNo))
+            throw new RouteDoesNotCallHereException(routeNo);
+
+        Route route = this.routes.get(routeNo);
+
+        // todo is this an unmodifiable collection ?
+        return route.schedule;
     }
 
-    public LocalTime getTimeOfNextBus(Route route, LocalTime t) {
-        // todo gets the time of the next expected bus of a given route after a given time t as per bus stop timetable
+    public LocalTime getTimeOfNextBus(String routeNo, LocalTime t) throws RouteDoesNotCallHereException {
+
+        if (!this.routes.containsKey(routeNo))
+            throw new RouteDoesNotCallHereException(routeNo);
+
+        Route route = this.routes.get(routeNo); //todo assuming the schedule is always ordered?
+
+        for (LocalTime time : route.schedule) {
+            if (time.isAfter(t)) {
+                return time;
+            }
+        }
+
         return null;
     }
 
     public void display (LocalTime t) {
-        // todo displays the 10 next expected buses starting from a given time t (current time under normal circumstances)
+
+        Iterator<Map.Entry<String, ExpectedBus>> iterator = this.expectedBuses.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            ExpectedBus expectedBus = iterator.next().getValue();
+
+            if ((expectedBus.status == BusStatus.cancelled && expectedBus.time.isBefore(t))
+                 || ( expectedBus.time.plusMinutes(expectedBus.delay + 3).isBefore(t) )) {
+                iterator.remove();
+            }
+        }
+
+        if (this.expectedBuses.size() < 10) {
+            addScheduledToExpected();
+        }
+
+        List<ExpectedBus> busesToDisplay = new ArrayList<>(this.expectedBuses.values());
+        busesToDisplay.sort(Comparator.comparing(ExpectedBus::getTime));
+        List<ExpectedBus> firstTenBuses = busesToDisplay.subList(0, Math.min(10, busesToDisplay.size()));
+
+        String[][] displayTableData = new String[firstTenBuses.size() + 1][4]; // +1 for the header
+        displayTableData[0] = new String[]{"Number", "Destination", "Due at", "Status"};
+
+        for (int i = 0; i < firstTenBuses.size(); i++) {
+            ExpectedBus expectedBus = firstTenBuses.get(i);
+            displayTableData[i + 1][0] = expectedBus.routeNo;
+            displayTableData[i + 1][1] = expectedBus.destination;
+            displayTableData[i + 1][2] = expectedBus.time.toString();
+            displayTableData[i + 1][3] = getStatusDisplayValue(expectedBus.status, expectedBus.delay);
+        }
+
+        for (String[] rowData : displayTableData) {
+            for (String data : rowData) {
+                System.out.printf("%-20s", data);
+            }
+            System.out.println();
+        }
+    }
+
+    private String getStatusDisplayValue(BusStatus status, int delay){
+        if (status == BusStatus.onTime){
+            return "on time";
+        }
+        else if (status == BusStatus.delayed){
+            return delay + " minutes delay";
+        }
+        else if (status == BusStatus.cancelled){
+            return "cancelled";
+        }
+        return "error";
     }
 
 
