@@ -1,7 +1,7 @@
-package system.tests;
+package MetropolisBusStop.tests;
 
 import org.junit.jupiter.api.Test;
-import system.impl.Example;
+import MetropolisBusStop.impl.Example;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,3 +17,5 @@ class ExampleTest {
         assertEquals(5, Example.add(3, 2));
     }
 }
+
+// todo test that exceptions are thrown, e.g. expected route can't have a negative delay or journeyNo

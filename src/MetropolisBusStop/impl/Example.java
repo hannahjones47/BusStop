@@ -1,4 +1,4 @@
-package system.impl;
+package MetropolisBusStop.impl;
 
 import java.util.stream.DoubleStream;
 
