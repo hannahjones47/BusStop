@@ -171,12 +171,12 @@ public class BusStopDisplay {
             displayTableData[i + 1][4] = getStatusDisplayValue(expectedBus.status, expectedBus.delay);
         }
 
+
         for (String[] rowData : displayTableData) {
-            for (String data : rowData) {
-                System.out.printf("%-20s", data);
-            }
-            System.out.println();
+            System.out.printf("%-10s%-10s%-21s%-10s%-10s%n",
+                    rowData[0], rowData[1], rowData[2], rowData[3], rowData[4]);
         }
+
     }
 
     private String getStatusDisplayValue(BusStatus status, int delay){
