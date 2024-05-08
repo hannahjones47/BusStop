@@ -10,8 +10,8 @@ public class BusStopDisplay {
 
     String id;
     String name;
-    public Map<String, Route> routes; // todo am i allowed to make that public??
-    public Map<String, ExpectedBus> expectedBuses;
+    private Map<String, Route> routes;
+    private Map<String, ExpectedBus> expectedBuses;
 
     public BusStopDisplay(File stopInfo, File routesFile, File ttInfo) { // todo do i have to name this create?
 
@@ -102,13 +102,10 @@ public class BusStopDisplay {
         for (ExpectedBus expectedBus : expectedBusList) {
             this.expectedBuses.put("R" + expectedBus.getRouteNo() + "J" + expectedBus.getJourneyNo(), expectedBus); // todo this key might need improving
         }
-
-//todo dont know if this can go here bc it isnt listed on class diagrm , maybe need to put in constructor.
     }
 
     public Map<String, Route> getCallingRoutes() {
-        // todo is this an unmodifiable collection ?
-        return this.routes;
+        return Collections.unmodifiableMap(this.routes);
     }
 
     public List<LocalTime> getDepartureTimes(String routeNo) throws RouteDoesNotCallHereException {
@@ -118,8 +115,7 @@ public class BusStopDisplay {
 
         Route route = this.routes.get(routeNo);
 
-        // todo is this an unmodifiable collection ?
-        return route.schedule;
+        return Collections.unmodifiableList(route.schedule);
     }
 
     public LocalTime getTimeOfNextBus(String routeNo, LocalTime t) throws RouteDoesNotCallHereException {
@@ -191,6 +187,5 @@ public class BusStopDisplay {
         }
         return "error";
     }
-
 
 }

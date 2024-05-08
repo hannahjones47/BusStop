@@ -6,7 +6,7 @@ import java.util.List;
 public class Route {
 
     String routeNo;
-    String destination;
+    public String destination;
     String origin;
     List<LocalTime> schedule;
 
