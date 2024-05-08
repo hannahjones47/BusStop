@@ -17,16 +17,41 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class Test {
+
     Path projectDir = Paths.get("").toAbsolutePath();
     File stopInfoFile = new File(projectDir.resolve("src/MetropolisBusStop/configurationData/stop_info.csv").toString());
     File routesFile = new File(projectDir.resolve("src/MetropolisBusStop/configurationData/routes.csv").toString());
     File timetableFile = new File(projectDir.resolve("src/MetropolisBusStop/configurationData/timetable.csv").toString());
     BusStopDisplay busStopDisplay;
 
+    public Test() throws IOException {
+        busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
+    }
+
     @org.junit.jupiter.api.Test
     void CreateBusStopDisplay_ValidTest() {
-        busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
         assertEquals(busStopDisplay.getCallingRoutes().size(), 8);
+    }
+
+    @org.junit.jupiter.api.Test
+    void CreateBusStopDisplay_InvalidTest_StopInfoFile() {
+        assertThrows(IOException.class, () -> {
+            new BusStopDisplay(new File("nonExistentFile.csv"), routesFile, stopInfoFile);
+        });
+    }
+
+    @org.junit.jupiter.api.Test
+    void CreateBusStopDisplay_InvalidTest_RoutesFile() {
+        assertThrows(IOException.class, () -> {
+            new BusStopDisplay(stopInfoFile, new File("nonExistentFile.csv"), timetableFile);
+        });
+    }
+
+    @org.junit.jupiter.api.Test
+    void CreateBusStopDisplay_InvalidTest_TimetableInfoFile() {
+        assertThrows(IOException.class, () -> {
+            new BusStopDisplay(stopInfoFile, routesFile, new File("nonExistentFile.csv"));
+        });
     }
 
     @ParameterizedTest
@@ -36,7 +61,6 @@ class Test {
             "15, 21:43, 21:44"
     })
     void GetTimeOfNextBus_ValidTest(String routeNo, String currentTime, String expectedNextTime) {
-        busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
 
         try {
             LocalTime timeOfNextBus = busStopDisplay.getTimeOfNextBus(routeNo, LocalTime.parse(currentTime));
@@ -48,7 +72,6 @@ class Test {
 
     @org.junit.jupiter.api.Test
     void GetTimeOfNextBus_InvalidTest_NotExistentRoute() {
-        busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
 
         assertThrows(RouteDoesNotCallHereException.class, () -> {
             busStopDisplay.getTimeOfNextBus("7", LocalTime.of(13, 30));
@@ -57,7 +80,6 @@ class Test {
 
     @org.junit.jupiter.api.Test
     void GetCallingRoutes_ValidTest() {
-        busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
 
         Map<String, Route> actualRoutes = busStopDisplay.getCallingRoutes();
 
@@ -80,7 +102,6 @@ class Test {
 
     @org.junit.jupiter.api.Test
     void GetDepartureTimes_ValidTest() {
-        busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
 
         List<LocalTime> expectedDepartureTimes = Arrays.asList(
                 LocalTime.of(8, 11),
@@ -115,7 +136,6 @@ class Test {
 
     @org.junit.jupiter.api.Test
     void GetDepartureTimes_InvalidTest_NotExistentRoute() {
-        busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
 
         assertThrows(RouteDoesNotCallHereException.class, () -> {
             busStopDisplay.getDepartureTimes("99");
@@ -124,8 +144,6 @@ class Test {
 
     @org.junit.jupiter.api.Test
     void Display_ValidTest() {
-        busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
-
         busStopDisplay.display(LocalTime.of(21,0)); // todo it doesnt esem to work if you input a time where there would be less than 10 buses coming after then that day.
     }
 }

@@ -28,15 +28,9 @@ public class ExpectedBus {
         this.delay = delay;
     }
 
-    public LocalTime getTime() {
-        return time;
-    }
+    public LocalTime getTime() { return time; }
 
-    public String getRouteNo() {
-        return routeNo;
-    }
+    public String getRouteNo() { return routeNo; }
 
-    public int getJourneyNo() {
-        return journeyNo;
-    }
+    public int getJourneyNo() { return journeyNo; }
 }
