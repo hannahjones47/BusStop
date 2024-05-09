@@ -14,45 +14,30 @@ public class BusStopDisplay {
     private Map<String, ExpectedBus> expectedBuses;
 
     public BusStopDisplay(File stopInfo, File routesFile, File ttInfo) throws IOException {
-
         this.routes = new HashMap<>();
         this.expectedBuses = new HashMap<>();
 
-        try (BufferedReader routesReader = new BufferedReader(new FileReader(routesFile))) {
+        loadRoutes(ttInfo, routesFile);
+        loadStopInfo(stopInfo);
+    }
 
-            String routeInfoline;
+    private void loadRoutes(File ttInfo, File routesFile) throws IOException {
+        try (BufferedReader routesReader = new BufferedReader(new FileReader(routesFile))) {
+            String routeInfoLine;
             int routeInfoLineCount = 0;
 
-            while ((routeInfoline = routesReader.readLine()) != null) {
-
-                routeInfoLineCount ++;
+            while ((routeInfoLine = routesReader.readLine()) != null) {
+                routeInfoLineCount++;
                 if (routeInfoLineCount == 1) continue;
 
-                String[] routeInfo = routeInfoline.split(",");
+                String[] routeInfo = routeInfoLine.split(",");
                 String routeNo = routeInfo[0];
                 String destination = routeInfo[1];
                 String origin = routeInfo[2];
 
                 List<LocalTime> schedule = new ArrayList<>();
                 try (BufferedReader ttInfoReader = new BufferedReader(new FileReader(ttInfo))) {
-
-                    String ttInfoLine;
-
-                    while ((ttInfoLine = ttInfoReader.readLine()) != null) {
-
-                        String[] timetableInfo = ttInfoLine.split(",");
-                        String currentRouteNo = timetableInfo[0];
-
-                        if (currentRouteNo.equals(routeNo)){
-
-                            for (int i = 1; i < timetableInfo.length; i++) {
-                                LocalTime time = LocalTime.parse(timetableInfo[i]);
-                                schedule.add(time);
-                            }
-
-                            break;
-                        }
-                    }
+                    loadSchedule(ttInfoReader, routeNo, schedule);
                 } catch (IOException e) {
                     throw new IOException("Error while attempting to read ttInfo", e);
                 }
@@ -60,16 +45,34 @@ public class BusStopDisplay {
                 Route route = new Route(routeNo, destination, origin, schedule);
                 this.routes.put(routeNo, route);
             }
-        } catch (IOException e) {
-            throw new IOException("Error while attempting to read routesFile", e);
         }
+    }
+
+    private void loadSchedule(BufferedReader ttInfoReader, String routeNo, List<LocalTime> schedule) throws IOException {
+        String ttInfoLine;
+        while ((ttInfoLine = ttInfoReader.readLine()) != null) {
+            String[] timetableInfo = ttInfoLine.split(",");
+            String currentRouteNo = timetableInfo[0];
+
+            if (currentRouteNo.equals(routeNo)) {
+                for (int i = 1; i < timetableInfo.length; i++) {
+                    LocalTime time = LocalTime.parse(timetableInfo[i]);
+                    schedule.add(time);
+                }
+                break;
+            }
+        }
+    }
+
+    private void loadStopInfo(File stopInfo) throws IOException {
 
         try (BufferedReader stopInfoReader = new BufferedReader(new FileReader(stopInfo))) {
+
             String stopInfoLine;
-            int stopInfolineCount = 0;
+            int stopInfoLineCount = 0;
             while ((stopInfoLine = stopInfoReader.readLine()) != null) {
-                stopInfolineCount++;
-                if (stopInfolineCount == 2) {
+                stopInfoLineCount++;
+                if (stopInfoLineCount == 2) {
                     String[] busStopInfo = stopInfoLine.split(",");
                     if (busStopInfo.length >= 2) {
                         this.id = busStopInfo[0];
@@ -80,8 +83,6 @@ public class BusStopDisplay {
                     break;
                 }
             }
-        } catch (IOException e) {
-            throw new IOException("Error while attempting to read stopInfo file", e);
         }
     }
 
