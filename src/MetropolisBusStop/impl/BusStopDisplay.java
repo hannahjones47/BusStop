@@ -19,6 +19,7 @@ public class BusStopDisplay {
 
         loadRoutes(ttInfo, routesFile);
         loadStopInfo(stopInfo);
+        addScheduledToExpected();
     }
 
     private void loadRoutes(File ttInfo, File routesFile) throws IOException {
@@ -78,7 +79,7 @@ public class BusStopDisplay {
                         this.id = busStopInfo[0];
                         this.name = busStopInfo[1];
                     } else {
-                        throw new IOException("Error while attempting to read stopInfo file, invalid format on stopInfoLine 2: " + stopInfoLine);
+                        throw new IOException("Error while attempting to read stopInfo file, invalid format on line 2: " + stopInfoLine);
                     }
                     break;
                 }

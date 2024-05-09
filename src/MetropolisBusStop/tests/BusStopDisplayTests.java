@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BusStopTests {
+class BusStopDisplayTests {
 
     Path projectDir = Paths.get("").toAbsolutePath();
     File stopInfoFile = new File(projectDir.resolve("src/MetropolisBusStop/configurationData/stop_info.csv").toString());
@@ -25,7 +25,7 @@ class BusStopTests {
     File timetableFile = new File(projectDir.resolve("src/MetropolisBusStop/configurationData/timetable.csv").toString());
     BusStopDisplay busStopDisplay;
 
-    public BusStopTests() throws IOException {
+    public BusStopDisplayTests() throws IOException {
         busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
     }
 

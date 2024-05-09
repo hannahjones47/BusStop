@@ -6,7 +6,7 @@ import java.util.List;
 public class ExpectedBus {
 
     String routeNo;
-    int journeyNo; // todo or is this set manually like an ID?
+    int journeyNo;
     String destination;
     BusStatus status;
     LocalTime time;
