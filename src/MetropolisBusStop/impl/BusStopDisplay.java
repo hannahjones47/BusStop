@@ -144,6 +144,10 @@ public class BusStopDisplay {
 
     public void display (LocalTime t) {
 
+        if (this.expectedBuses.size() < 10) {
+            addScheduledToExpected();
+        }
+
         Iterator<Map.Entry<String, ExpectedBus>> iterator = this.expectedBuses.entrySet().iterator();
 
         while (iterator.hasNext()) {
@@ -153,10 +157,6 @@ public class BusStopDisplay {
                  || ( expectedBus.time.plusMinutes(expectedBus.delay + 3).isBefore(t) )) {
                 iterator.remove();
             }
-        }
-
-        if (this.expectedBuses.size() < 10) {
-            addScheduledToExpected();
         }
 
         List<ExpectedBus> busesToDisplay = new ArrayList<>(this.expectedBuses.values());

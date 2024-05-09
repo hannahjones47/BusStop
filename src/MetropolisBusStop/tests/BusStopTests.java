@@ -145,7 +145,7 @@ class BusStopTests {
 
     @Test
     void Display_ValidTest() {
-        busStopDisplay.display(LocalTime.of(11,0)); // todo it doesnt esem to work if you input a time where there would be less than 10 buses coming after then that day.
+        busStopDisplay.display(LocalTime.of(21,1)); // todo it doesnt esem to work if you input a time where there would be less than 10 buses coming after then that day.
     }
 }
 
