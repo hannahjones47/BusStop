@@ -33,4 +33,15 @@ public class ExpectedBus {
     public String getRouteNo() { return routeNo; }
 
     public int getJourneyNo() { return journeyNo; }
+
+    public void updateStatus(BusStatus newStatus) {
+        this.status = newStatus;
+    }
+
+    public void updateDelay(int newDelay) {
+        if (newDelay < 0)
+            throw new IllegalArgumentException ("Negative delay!");
+
+        this.delay = newDelay;
+    }
 }

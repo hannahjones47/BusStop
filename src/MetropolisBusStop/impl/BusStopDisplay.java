@@ -1,12 +1,13 @@
 package MetropolisBusStop.impl;
 
+import MetropolisBusStop.impl.exceptions.BusDoesNotExistException;
 import MetropolisBusStop.impl.exceptions.RouteDoesNotCallHereException;
 
 import java.io.*;
 import java.time.LocalTime;
 import java.util.*;
 
-public class BusStopDisplay {
+public class BusStopDisplay implements BusInfoObserver {
 
     String id;
     String name;
@@ -156,7 +157,7 @@ public class BusStopDisplay {
 
             if ((expectedBus.status == BusStatus.cancelled && expectedBus.time.isBefore(t))
                  || ( expectedBus.time.plusMinutes(expectedBus.delay + 3).isBefore(t) )) {
-                iterator.remove();
+                iterator.remove(); // todo this doesnt seem to work.
             }
         }
 
@@ -195,6 +196,18 @@ public class BusStopDisplay {
             return "cancelled";
         }
         return "error";
+    }
+
+    @Override
+    public void updateBusInfo(String routeNo, int journeyNo, BusStatus newBusStatus, int newDelay) throws BusDoesNotExistException {
+
+        String busKey = "R" + routeNo + "J" + journeyNo;
+
+        if (expectedBuses.containsKey(busKey)){
+            ExpectedBus bus = expectedBuses.get(busKey);
+            bus.updateStatus(newBusStatus);
+            bus.updateDelay(newDelay);
+        }
     }
 
 }
