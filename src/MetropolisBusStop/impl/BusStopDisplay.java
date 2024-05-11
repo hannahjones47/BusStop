@@ -1,6 +1,5 @@
 package MetropolisBusStop.impl;
 
-import MetropolisBusStop.impl.exceptions.BusDoesNotExistException;
 import MetropolisBusStop.impl.exceptions.RouteDoesNotCallHereException;
 
 import java.io.*;
@@ -199,14 +198,38 @@ public class BusStopDisplay implements BusInfoObserver {
     }
 
     @Override
-    public void updateBusInfo(String routeNo, int journeyNo, BusStatus newBusStatus, int newDelay) throws BusDoesNotExistException {
+    public void updateBusAsDeparted(String routeNo, int journeyNo) {
 
         String busKey = "R" + routeNo + "J" + journeyNo;
 
         if (expectedBuses.containsKey(busKey)){
             ExpectedBus bus = expectedBuses.get(busKey);
-            bus.updateStatus(newBusStatus);
-            bus.updateDelay(newDelay);
+            this.expectedBuses.remove(busKey);
+        }
+    }
+
+    @Override
+    public void updateBusAsDelayed(String routeNo, int journeyNo, int delay) {
+
+        String busKey = "R" + routeNo + "J" + journeyNo;
+
+        if (expectedBuses.containsKey(busKey)){
+            ExpectedBus bus = expectedBuses.get(busKey);
+            if (bus.status != BusStatus.cancelled){
+                bus.updateStatus(BusStatus.delayed);
+                bus.updateDelay(delay);
+            }
+        }
+    }
+
+    @Override
+    public void updateBusAsCancelled(String routeNo, int journeyNo) {
+
+        String busKey = "R" + routeNo + "J" + journeyNo;
+
+        if (expectedBuses.containsKey(busKey)){
+            ExpectedBus bus = expectedBuses.get(busKey);
+            bus.updateStatus(BusStatus.cancelled);
         }
     }
 

@@ -1,7 +1,9 @@
 package MetropolisBusStop.impl;
 
-import MetropolisBusStop.impl.exceptions.BusDoesNotExistException;
-
 interface BusInfoObserver {
-    void updateBusInfo(String routeNo, int journeyNo, BusStatus newBusStatus, int delay) throws BusDoesNotExistException;
+    void updateBusAsDelayed(String routeNo, int journeyNo, int delay);
+
+    void updateBusAsCancelled(String routeNo, int journeyNo);
+
+    void updateBusAsDeparted(String routeNo, int journeyNo);
 }

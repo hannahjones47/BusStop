@@ -1,7 +1,5 @@
 package MetropolisBusStop.impl;
 
-import MetropolisBusStop.impl.exceptions.BusDoesNotExistException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -17,18 +15,33 @@ class BusInfoNotifier extends Observable {
         observers.remove(observer);
     }
 
-    public void notifyObservers(String routeNo, int journeyNo, BusStatus newBusStatus, int delay) {
+    public void notifyObserversOfDelay(String routeNo, int journeyNo, int delay) {
         for (BusInfoObserver observer : observers) {
-            try{
-                observer.updateBusInfo(routeNo, journeyNo, newBusStatus, delay);
-            }
-            catch (BusDoesNotExistException e){
-                System.out.printf("BusDoesNotExistException: ", e);
-            }
+            observer.updateBusAsDelayed(routeNo, journeyNo, delay);
         }
     }
 
-    public void updateBusStatus(String routeNo, int journeyNo, BusStatus newBusStatus, int delay) {
-        notifyObservers(routeNo, journeyNo, newBusStatus, delay);
+    public void notifyObserversOfCancellation(String routeNo, int journeyNo) {
+        for (BusInfoObserver observer : observers) {
+            observer.updateBusAsCancelled(routeNo, journeyNo);
+        }
+    }
+
+    public void notifyObserversOfDeparture(String routeNo, int journeyNo) {
+        for (BusInfoObserver observer : observers) {
+            observer.updateBusAsDeparted(routeNo, journeyNo);
+        }
+    }
+
+    public void updateBusStatusAsDelayed(String routeNo, int journeyNo, int delay) {
+        notifyObserversOfDelay(routeNo, journeyNo, delay);
+    }
+
+    public void updateBusStatusAsCancelled(String routeNo, int journeyNo) {
+        notifyObserversOfCancellation(routeNo, journeyNo);
+    }
+
+    public void updateBusStatusAsDeparted(String routeNo, int journeyNo) {
+        notifyObserversOfDeparture(routeNo, journeyNo);
     }
 }
