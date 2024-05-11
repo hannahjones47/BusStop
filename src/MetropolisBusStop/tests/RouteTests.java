@@ -1,23 +1,12 @@
 package MetropolisBusStop.tests;
 
-import MetropolisBusStop.impl.BusStatus;
-import MetropolisBusStop.impl.BusStopDisplay;
-import MetropolisBusStop.impl.ExpectedBus;
 import MetropolisBusStop.impl.Route;
-import MetropolisBusStop.impl.exceptions.RouteDoesNotCallHereException;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 

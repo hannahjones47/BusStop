@@ -33,7 +33,7 @@ public class Main {
 
             busInfoNotifierSimulation.simulate();
             try {
-                TimeUnit.SECONDS.sleep(5);//todo 15
+                TimeUnit.SECONDS.sleep(15);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

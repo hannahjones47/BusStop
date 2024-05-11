@@ -1,7 +1,6 @@
 package MetropolisBusStop.impl;
 
 import java.time.LocalTime;
-import java.util.List;
 
 public class ExpectedBus {
 
