@@ -1,6 +1,6 @@
 package MetropolisBusStop.impl;
 
-interface BusInfoObserver {
+public interface BusInfoObserver {
     void updateBusAsDelayed(String routeNo, int journeyNo, int delay);
 
     void updateBusAsCancelled(String routeNo, int journeyNo);

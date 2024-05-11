@@ -87,6 +87,10 @@ public class BusStopDisplay implements BusInfoObserver {
         }
     }
 
+    public String getId() { return this.id; }
+
+    public String getName() { return this.name; }
+
     private void addScheduledToExpected() {
         this.expectedBuses = new HashMap<String, ExpectedBus>();
 
@@ -117,6 +121,10 @@ public class BusStopDisplay implements BusInfoObserver {
         return Collections.unmodifiableMap(this.routes);
     }
 
+    public Map<String, ExpectedBus> getExpectedBuses() {
+        return Collections.unmodifiableMap(this.expectedBuses);
+    }
+
     public List<LocalTime> getDepartureTimes(String routeNo) throws RouteDoesNotCallHereException {
 
         if (!this.routes.containsKey(routeNo))
@@ -144,6 +152,8 @@ public class BusStopDisplay implements BusInfoObserver {
     }
 
     public void display (LocalTime t) {
+
+        // todo maybe i should refactor this to have a separate method to get the buses to display and then that would be testable.
 
         if (this.expectedBuses.size() < 10) {
             addScheduledToExpected();
@@ -184,7 +194,7 @@ public class BusStopDisplay implements BusInfoObserver {
 
     }
 
-    private String getStatusDisplayValue(BusStatus status, int delay){
+    public String getStatusDisplayValue(BusStatus status, int delay){
         if (status == BusStatus.onTime){
             return "on time";
         }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-class BusInfoNotifier extends Observable {
+public class BusInfoNotifier extends Observable {
     private List<BusInfoObserver> observers = new ArrayList<>();
 
     public void addObserver(BusInfoObserver observer) {

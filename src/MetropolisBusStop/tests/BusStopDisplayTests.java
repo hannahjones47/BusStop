@@ -1,5 +1,6 @@
 package MetropolisBusStop.tests;
 
+import MetropolisBusStop.impl.BusStatus;
 import MetropolisBusStop.impl.BusStopDisplay;
 import MetropolisBusStop.impl.Route;
 import MetropolisBusStop.impl.exceptions.RouteDoesNotCallHereException;
@@ -32,6 +33,8 @@ class BusStopDisplayTests {
     @Test
     void CreateBusStopDisplay_ValidTest() {
         assertEquals(busStopDisplay.getCallingRoutes().size(), 8);
+        assertEquals("BS05", busStopDisplay.getId());
+        assertEquals("Sweetspot", busStopDisplay.getName());
     }
 
     @Test
@@ -146,6 +149,56 @@ class BusStopDisplayTests {
     @Test
     void Display_ValidTest() {
         busStopDisplay.display(LocalTime.of(21,1)); // todo it doesnt esem to work if you input a time where there would be less than 10 buses coming after then that day.
+    }
+
+    @Test
+    void UpdateBusAsDeparted_ValidTest() {
+        busStopDisplay.updateBusAsDeparted("3", 1);
+        assertFalse(busStopDisplay.getExpectedBuses().containsKey("R3J1"));
+    }
+
+    @Test
+    void UpdateBusAsDelayed_ValidTest() {
+        int delay = 5;
+        busStopDisplay.updateBusAsDelayed("3", 1, delay);
+        assertEquals(BusStatus.delayed, busStopDisplay.getExpectedBuses().get("R3J1").getStatus());
+        assertEquals(delay, busStopDisplay.getExpectedBuses().get("R3J1").getDelay());
+    }
+
+    @Test
+    void UpdateBusAsCancelled_ValidTest() {
+        busStopDisplay.updateBusAsCancelled("3", 1);
+        assertEquals(BusStatus.cancelled, busStopDisplay.getExpectedBuses().get("R3J1").getStatus());
+    }
+
+    @Test
+    void UpdateBusAsDelayed_AlreadyCancelledTest() {
+        busStopDisplay.updateBusAsCancelled("3", 1);
+        busStopDisplay.updateBusAsDelayed("3", 1, 5);
+        assertEquals(BusStatus.cancelled, busStopDisplay.getExpectedBuses().get("R3J1").getStatus());
+        assertNotEquals(5, busStopDisplay.getExpectedBuses().get("R3J1").getDelay());
+    }
+
+    @Test
+    void UpdateBusAsCancelled_NotExistentBusTest() {
+        assertDoesNotThrow(() -> busStopDisplay.updateBusAsCancelled("99", 1));
+    }
+
+    @Test
+    void UpdateBusAsDeparted_NotExistentBusTest() {
+        assertDoesNotThrow(() -> busStopDisplay.updateBusAsDeparted("99", 1));
+    }
+
+    @Test
+    void UpdateBusAsDelayed_NotExistentBusTest() {
+        assertDoesNotThrow(() -> busStopDisplay.updateBusAsDelayed("99", 1, 5));
+    }
+
+    @Test
+    void GetStatusDisplayValue_ValidTest() {
+        assertEquals("on time", busStopDisplay.getStatusDisplayValue(BusStatus.onTime, 0));
+        assertEquals("5 minutes delay", busStopDisplay.getStatusDisplayValue(BusStatus.delayed, 5));
+        assertEquals("cancelled", busStopDisplay.getStatusDisplayValue(BusStatus.cancelled, 0));
     }
 }
 

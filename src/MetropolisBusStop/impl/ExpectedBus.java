@@ -34,6 +34,10 @@ public class ExpectedBus {
 
     public int getJourneyNo() { return journeyNo; }
 
+    public int getDelay() { return delay; }
+
+    public BusStatus getStatus() { return status; }
+
     public void updateStatus(BusStatus newStatus) {
         this.status = newStatus;
     }
