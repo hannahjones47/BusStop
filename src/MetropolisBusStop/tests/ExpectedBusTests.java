@@ -11,11 +11,15 @@ import java.time.LocalTime;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+/**
+ * Tests for the ExpectedBus class
+ */
 class ExpectedBusTests {
 
-    public ExpectedBusTests() {
-    }
-
+    /**
+     * Test that verifies that an IllegalArgumentException is thrown when a negative journey number
+     * is passed to the constructor
+     */
     @Test
     void CreateExpectedBus_InvalidTest_NegativeJourneyNo() {
         assertThrows(IllegalArgumentException.class, () -> {
@@ -23,6 +27,10 @@ class ExpectedBusTests {
         });
     }
 
+    /**
+     * Test that verifies that an IllegalArgumentException is thrown when a negative delay
+     * is passed to the constructor
+     */
     @Test
     void CreateExpectedBus_InvalidTest_NegativeDelay() {
         assertThrows(IllegalArgumentException.class, () -> {
@@ -30,6 +38,9 @@ class ExpectedBusTests {
         });
     }
 
+    /**
+     * Test that verifies that an exception is thrown when an invalid time is passed to the constructor
+     */
     @ParameterizedTest
     @CsvSource({
             "24:00",
@@ -43,6 +54,9 @@ class ExpectedBusTests {
         });
     }
 
+    /**
+     * Test that verifies that a valid ExpectedBus object is created when valid parameters are passed to the constructor
+     */
     @Test
     void CreateExpectedBus_ValidTest() {
         assertDoesNotThrow(() -> {

@@ -7,8 +7,11 @@ import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.concurrent.TimeUnit;
 
-public class Main {
-    public static void main(String[] args) {
+/**
+ * Main class to run the simulation
+ */
+public class Demo {
+    public static void main(String[] args) throws IOException {
 
         Path projectDir = Paths.get("").toAbsolutePath();
         File stopInfoFile = new File(projectDir.resolve("src/MetropolisBusStop/configurationData/stop_info.csv").toString());
@@ -17,12 +20,7 @@ public class Main {
 
         BusInfoNotifierSimulation busInfoNotifierSimulation = new BusInfoNotifierSimulation();
 
-        BusStopDisplay busStopDisplay = null;
-        try {
-            busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        BusStopDisplay busStopDisplay = new BusStopDisplay(stopInfoFile, routesFile, timetableFile);
 
         busInfoNotifierSimulation.addObserver(busStopDisplay);
 
@@ -32,6 +30,7 @@ public class Main {
             System.out.println();
 
             busInfoNotifierSimulation.simulate();
+
             try {
                 TimeUnit.SECONDS.sleep(15);
             } catch (InterruptedException e) {

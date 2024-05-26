@@ -3,6 +3,9 @@ package MetropolisBusStop.impl;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * Class representing a bus route
+ */
 public class Route {
 
     String routeNo;

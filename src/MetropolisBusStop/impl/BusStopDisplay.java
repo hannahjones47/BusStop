@@ -6,6 +6,15 @@ import java.io.*;
 import java.time.LocalTime;
 import java.util.*;
 
+/**
+ * The BusStopDisplay class implements the BusInfoObserver interface and represents a display
+ * at a bus stop. It maintains a list of expected buses and provides methods to update the
+ * status of these buses based on notifications received. It also provides methods to get
+ * the departure times for a specific route. The class also provides a method to display the
+ * next buses due at the bus stop after a given time. The display includes the route number,
+ * destination, due time and status of each bus. If a bus is delayed or cancelled, this is
+ * reflected in the display.
+ */
 public class BusStopDisplay implements BusInfoObserver {
 
     String id;
@@ -13,6 +22,14 @@ public class BusStopDisplay implements BusInfoObserver {
     private Map<String, Route> routes;
     private Map<String, ExpectedBus> expectedBuses;
 
+    /**
+     * Constructs a BusStopDisplay object and initialises it with data from the given files.
+     *
+     * @param stopInfo the file containing stop information
+     * @param routesFile the file containing route information
+     * @param ttInfo the file containing timetable information
+     * @throws IOException if an I/O error occurs while reading the files
+     */
     public BusStopDisplay(File stopInfo, File routesFile, File ttInfo) throws IOException {
         this.routes = new HashMap<>();
         this.expectedBuses = new HashMap<>();
@@ -22,6 +39,13 @@ public class BusStopDisplay implements BusInfoObserver {
         addScheduledToExpected();
     }
 
+    /**
+     * Loads routes from the given files and populates the routes map.
+     *
+     * @param ttInfo the file containing timetable information
+     * @param routesFile the file containing route information
+     * @throws IOException if an I/O error occurs while reading the files
+     */
     private void loadRoutes(File ttInfo, File routesFile) throws IOException {
         try (BufferedReader routesReader = new BufferedReader(new FileReader(routesFile))) {
             String routeInfoLine;
@@ -49,6 +73,14 @@ public class BusStopDisplay implements BusInfoObserver {
         }
     }
 
+    /**
+     * Loads the schedule for a specific route from the timetable file.
+     *
+     * @param ttInfoReader the BufferedReader for reading the timetable file
+     * @param routeNo the route number for which to load the schedule
+     * @param schedule the list to populate with schedule times
+     * @throws IOException if an I/O error occurs while reading the file
+     */
     private void loadSchedule(BufferedReader ttInfoReader, String routeNo, List<LocalTime> schedule) throws IOException {
         String ttInfoLine;
         while ((ttInfoLine = ttInfoReader.readLine()) != null) {
@@ -65,6 +97,12 @@ public class BusStopDisplay implements BusInfoObserver {
         }
     }
 
+    /**
+     * Loads bus stop information from the given file.
+     *
+     * @param stopInfo the file containing stop information
+     * @throws IOException if an I/O error occurs while reading the file
+     */
     private void loadStopInfo(File stopInfo) throws IOException {
 
         try (BufferedReader stopInfoReader = new BufferedReader(new FileReader(stopInfo))) {
@@ -87,10 +125,23 @@ public class BusStopDisplay implements BusInfoObserver {
         }
     }
 
+    /**
+     * Returns the ID of the bus stop.
+     *
+     * @return the bus stop ID
+     */
     public String getId() { return this.id; }
 
+    /**
+     * Returns the name of the bus stop.
+     *
+     * @return the bus stop name
+     */
     public String getName() { return this.name; }
 
+    /**
+     * Adds scheduled buses to the expected buses map.
+     */
     private void addScheduledToExpected() {
         this.expectedBuses = new HashMap<String, ExpectedBus>();
 
@@ -111,20 +162,36 @@ public class BusStopDisplay implements BusInfoObserver {
 
         expectedBusList.sort(Comparator.comparing(ExpectedBus::getTime));
 
-        // todo check that the list is actually ordered
         for (ExpectedBus expectedBus : expectedBusList) {
-            this.expectedBuses.put("R" + expectedBus.getRouteNo() + "J" + expectedBus.getJourneyNo(), expectedBus); // todo this key might need improving
+            this.expectedBuses.put("R" + expectedBus.getRouteNo() + "J" + expectedBus.getJourneyNo(), expectedBus);
         }
     }
 
+    /**
+     * Returns an unmodifiable map of the routes that call at this bus stop.
+     *
+     * @return an unmodifiable map of routes
+     */
     public Map<String, Route> getCallingRoutes() {
         return Collections.unmodifiableMap(this.routes);
     }
 
+    /**
+     * Returns an unmodifiable map of the expected buses at this bus stop.
+     *
+     * @return an unmodifiable map of expected buses
+     */
     public Map<String, ExpectedBus> getExpectedBuses() {
         return Collections.unmodifiableMap(this.expectedBuses);
     }
 
+    /**
+     * Returns a list of departure times for a given route number.
+     *
+     * @param routeNo the route number
+     * @return a list of departure times
+     * @throws RouteDoesNotCallHereException if the route does not call at this stop
+     */
     public List<LocalTime> getDepartureTimes(String routeNo) throws RouteDoesNotCallHereException {
 
         if (!this.routes.containsKey(routeNo))
@@ -135,12 +202,20 @@ public class BusStopDisplay implements BusInfoObserver {
         return Collections.unmodifiableList(route.schedule);
     }
 
+    /**
+     * Returns the time of the next bus for a given route number after a given time.
+     *
+     * @param routeNo the route number
+     * @param t the time after which to find the next bus
+     * @return the time of the next bus
+     * @throws RouteDoesNotCallHereException if the route does not call at this stop
+     */
     public LocalTime getTimeOfNextBus(String routeNo, LocalTime t) throws RouteDoesNotCallHereException {
 
         if (!this.routes.containsKey(routeNo))
             throw new RouteDoesNotCallHereException(routeNo);
 
-        Route route = this.routes.get(routeNo); //todo assuming the schedule is always ordered?
+        Route route = this.routes.get(routeNo);
 
         for (LocalTime time : route.schedule) {
             if (time.isAfter(t)) {
@@ -151,6 +226,11 @@ public class BusStopDisplay implements BusInfoObserver {
         return null;
     }
 
+    /**
+     * Displays the next ten buses due at the bus stop after the given time.
+     *
+     * @param t the time after which to display the next buses
+     */
     public void display (LocalTime t) {
 
         // todo maybe i should refactor this to have a separate method to get the buses to display and then that would be testable.
@@ -194,6 +274,13 @@ public class BusStopDisplay implements BusInfoObserver {
 
     }
 
+    /**
+     * Returns a display value for the status of a bus.
+     *
+     * @param status the status of the bus
+     * @param delay the delay of the bus
+     * @return a display value for the status
+     */
     public String getStatusDisplayValue(BusStatus status, int delay){
         if (status == BusStatus.onTime){
             return "on time";
@@ -207,6 +294,12 @@ public class BusStopDisplay implements BusInfoObserver {
         return "error";
     }
 
+    /**
+     * Updates the status of a given bus to departed.
+     *
+     * @param routeNo the route number of the bus to update
+     * @param journeyNo the journey number of the bus to update
+     */
     @Override
     public void updateBusAsDeparted(String routeNo, int journeyNo) {
 
@@ -218,6 +311,13 @@ public class BusStopDisplay implements BusInfoObserver {
         }
     }
 
+    /**
+     * Updates the status of a given bus to delayed.
+     *
+     * @param routeNo the route number of the bus to update
+     * @param journeyNo the journey number of the bus to update
+     * @param delay the delay duration in minutes
+     */
     @Override
     public void updateBusAsDelayed(String routeNo, int journeyNo, int delay) {
 
@@ -232,6 +332,12 @@ public class BusStopDisplay implements BusInfoObserver {
         }
     }
 
+    /**
+     * Updates the status of a given bus to cancelled.
+     *
+     * @param routeNo the route number of the bus to update
+     * @param journeyNo the journey number of the bus to update
+     */
     @Override
     public void updateBusAsCancelled(String routeNo, int journeyNo) {
 

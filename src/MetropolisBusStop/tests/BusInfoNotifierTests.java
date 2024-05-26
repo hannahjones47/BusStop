@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for the BusInfoNotifier class
+ */
 class BusInfoNotifierTests {
     BusInfoNotifier busInfoNotifier;
     TestBusInfoObserver observer;
@@ -17,6 +20,10 @@ class BusInfoNotifierTests {
         observer = new TestBusInfoObserver();
     }
 
+    /**
+     * Test that verifies that an observer is added to the list of observers,
+     * and therefore receives notifications.
+     */
     @Test
     void addObserver_ValidTest() {
         busInfoNotifier.addObserver(observer);
@@ -24,6 +31,10 @@ class BusInfoNotifierTests {
         assertTrue(observer.isUpdateBusAsDelayedCalled());
     }
 
+    /**
+     * Test that verifies that an observer is removed from the list of observers,
+     * and therefore no longer receives notifications.
+     */
     @Test
     void removeObserver_ValidTest() {
         busInfoNotifier.addObserver(observer);
@@ -32,6 +43,9 @@ class BusInfoNotifierTests {
         assertFalse(observer.isUpdateBusAsDelayedCalled());
     }
 
+    /**
+     * Test that verifies that an observer is notified of a delay via the Observer pattern
+     */
     @Test
     void notifyObserversOfDelay_ValidTest() {
         busInfoNotifier.addObserver(observer);
@@ -39,6 +53,9 @@ class BusInfoNotifierTests {
         assertTrue(observer.isUpdateBusAsDelayedCalled());
     }
 
+    /**
+     * Test that verifies that an observer is notified of a cancellation via the Observer pattern
+     */
     @Test
     void notifyObserversOfCancellation_ValidTest() {
         busInfoNotifier.addObserver(observer);
@@ -46,6 +63,9 @@ class BusInfoNotifierTests {
         assertTrue(observer.isUpdateBusAsCancelledCalled());
     }
 
+    /**
+     * Test that verifies that an observer is notified of a departure via the Observer pattern
+     */
     @Test
     void notifyObserversOfDeparture_ValidTest() {
         busInfoNotifier.addObserver(observer);
@@ -53,6 +73,9 @@ class BusInfoNotifierTests {
         assertTrue(observer.isUpdateBusAsDepartedCalled());
     }
 
+    /**
+     * Test class that implements the BusInfoObserver interface for testing purposes
+     */
     class TestBusInfoObserver implements BusInfoObserver {
         private boolean isUpdateBusAsDelayedCalled = false;
         private boolean isUpdateBusAsCancelledCalled = false;

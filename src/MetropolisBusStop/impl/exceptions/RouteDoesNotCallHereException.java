@@ -1,5 +1,8 @@
 package MetropolisBusStop.impl.exceptions;
 
+/**
+ * Exception thrown when a route does not call at a bus stop
+ */
 public class RouteDoesNotCallHereException extends Exception {
 
     public RouteDoesNotCallHereException(String routeNo) {

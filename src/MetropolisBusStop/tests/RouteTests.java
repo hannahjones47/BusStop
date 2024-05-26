@@ -10,11 +10,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for the Route class
+ */
 class RouteTests {
 
-    public RouteTests() {
-    }
-
+    /**
+     * Test that verifies that an exception is thrown when an invalid time is passed to the constructor
+     */
     @ParameterizedTest
     @CsvSource({
             "24:00",
@@ -30,6 +33,9 @@ class RouteTests {
         });
     }
 
+    /**
+     * Test that verifies that a valid Route object is created when valid parameters are passed to the constructor
+     */
     @ParameterizedTest
     @CsvSource({
             "23:59",

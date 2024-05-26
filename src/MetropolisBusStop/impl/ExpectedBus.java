@@ -2,6 +2,9 @@ package MetropolisBusStop.impl;
 
 import java.time.LocalTime;
 
+/**
+ * Class representing an expected bus at a bus stop
+ */
 public class ExpectedBus {
 
     String routeNo;
