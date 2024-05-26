@@ -35,8 +35,8 @@ public class BusStopDisplay implements BusInfoObserver {
         this.expectedBuses = new HashMap<>();
 
         loadRoutes(ttInfo, routesFile);
-        loadStopInfo(stopInfo);
         addScheduledToExpected();
+        loadStopInfo(stopInfo);
     }
 
     /**
@@ -67,8 +67,8 @@ public class BusStopDisplay implements BusInfoObserver {
                     throw new IOException("Error while attempting to read ttInfo", e);
                 }
 
-                Route route = new Route(routeNo, destination, origin, schedule);
-                this.routes.put(routeNo, route);
+                Route r = new Route(routeNo, destination, origin, schedule);
+                this.routes.put(routeNo, r);
             }
         }
     }
@@ -126,44 +126,30 @@ public class BusStopDisplay implements BusInfoObserver {
     }
 
     /**
-     * Returns the ID of the bus stop.
-     *
-     * @return the bus stop ID
-     */
-    public String getId() { return this.id; }
-
-    /**
-     * Returns the name of the bus stop.
-     *
-     * @return the bus stop name
-     */
-    public String getName() { return this.name; }
-
-    /**
      * Adds scheduled buses to the expected buses map.
      */
     private void addScheduledToExpected() {
         this.expectedBuses = new HashMap<String, ExpectedBus>();
 
-        List<ExpectedBus> expectedBusList = new ArrayList<>();
+        List<ExpectedBus> ebs = new ArrayList<>();
 
         this.routes.forEach((key, route) -> {
             for (int i = 0; i < route.schedule.size(); i++) {
-                LocalTime time = route.schedule.get(i);
-                ExpectedBus expectedBus = new ExpectedBus(route.routeNo,
-                                                            i + 1,
-                                                            route.destination,
-                                                            BusStatus.onTime,
-                                                            time,
-                                                            0);
-                expectedBusList.add(expectedBus);
+                LocalTime t = route.schedule.get(i);
+                ExpectedBus eb = new ExpectedBus(route.routeNo,
+                                        i + 1,
+                                                  route.destination,
+                                                  BusStatus.onTime,
+                                                  t,
+                                            0);
+                ebs.add(eb);
             }
         });
 
-        expectedBusList.sort(Comparator.comparing(ExpectedBus::getTime));
+        ebs.sort(Comparator.comparing(ExpectedBus::getTime));
 
-        for (ExpectedBus expectedBus : expectedBusList) {
-            this.expectedBuses.put("R" + expectedBus.getRouteNo() + "J" + expectedBus.getJourneyNo(), expectedBus);
+        for (ExpectedBus eb : ebs) {
+            this.expectedBuses.put("R" + eb.getRouteNo() + "J" + eb.getJourneyNo(), eb);
         }
     }
 
@@ -174,15 +160,6 @@ public class BusStopDisplay implements BusInfoObserver {
      */
     public Map<String, Route> getCallingRoutes() {
         return Collections.unmodifiableMap(this.routes);
-    }
-
-    /**
-     * Returns an unmodifiable map of the expected buses at this bus stop.
-     *
-     * @return an unmodifiable map of expected buses
-     */
-    public Map<String, ExpectedBus> getExpectedBuses() {
-        return Collections.unmodifiableMap(this.expectedBuses);
     }
 
     /**
@@ -215,9 +192,9 @@ public class BusStopDisplay implements BusInfoObserver {
         if (!this.routes.containsKey(routeNo))
             throw new RouteDoesNotCallHereException(routeNo);
 
-        Route route = this.routes.get(routeNo);
+        Route r = this.routes.get(routeNo);
 
-        for (LocalTime time : route.schedule) {
+        for (LocalTime time : r.schedule) {
             if (time.isAfter(t)) {
                 return time;
             }
@@ -233,8 +210,33 @@ public class BusStopDisplay implements BusInfoObserver {
      */
     public void display (LocalTime t) {
 
-        // todo maybe i should refactor this to have a separate method to get the buses to display and then that would be testable.
+        List<ExpectedBus> busesToDisplay = getBusesToDisplay(t);
 
+        String[][] di = new String[busesToDisplay.size() + 1][5];
+        di[0] = new String[]{"Number","Route", "Destination", "Due at", "Status"};
+
+        for (int i = 0; i < busesToDisplay.size(); i++) {
+            ExpectedBus expectedBus = busesToDisplay.get(i);
+            di[i + 1][0] = String.valueOf(i + 1);
+            di[i + 1][1] = expectedBus.routeNo;
+            di[i + 1][2] = expectedBus.destination;
+            di[i + 1][3] = expectedBus.time.toString();
+            di[i + 1][4] = getStatusDisplayValue(expectedBus.status, expectedBus.delay);
+        }
+
+        for (String[] rowData : di) {
+            System.out.printf("%-10s%-10s%-21s%-10s%-10s%n",
+                    rowData[0], rowData[1], rowData[2], rowData[3], rowData[4]);
+        }
+    }
+
+    /**
+     * Returns a list of the next ten buses due at the bus stop after the given time.
+     *
+     * @param t the time after which to find the next buses
+     * @return a list of the next ten buses
+     */
+    private List<ExpectedBus> getBusesToDisplay(LocalTime t) {
         if (this.expectedBuses.size() < 10) {
             addScheduledToExpected();
         }
@@ -242,36 +244,17 @@ public class BusStopDisplay implements BusInfoObserver {
         Iterator<Map.Entry<String, ExpectedBus>> iterator = this.expectedBuses.entrySet().iterator();
 
         while (iterator.hasNext()) {
-            ExpectedBus expectedBus = iterator.next().getValue();
+            ExpectedBus eb = iterator.next().getValue();
 
-            if ((expectedBus.status == BusStatus.cancelled && expectedBus.time.isBefore(t))
-                 || ( expectedBus.time.plusMinutes(expectedBus.delay + 3).isBefore(t) )) {
-                iterator.remove(); // todo this doesnt seem to work.
+            if ((eb.status == BusStatus.cancelled && eb.time.isBefore(t))
+                    || (eb.time.plusMinutes(eb.delay + 3).isBefore(t))) {
+                iterator.remove(); // todo check this works?
             }
         }
 
         List<ExpectedBus> busesToDisplay = new ArrayList<>(this.expectedBuses.values());
         busesToDisplay.sort(Comparator.comparing(ExpectedBus::getTime));
-        List<ExpectedBus> firstTenBuses = busesToDisplay.subList(0, Math.min(10, busesToDisplay.size()));
-
-        String[][] displayTableData = new String[firstTenBuses.size() + 1][5];
-        displayTableData[0] = new String[]{"Number","Route", "Destination", "Due at", "Status"};
-
-        for (int i = 0; i < firstTenBuses.size(); i++) {
-            ExpectedBus expectedBus = firstTenBuses.get(i);
-            displayTableData[i + 1][0] = String.valueOf(i + 1);
-            displayTableData[i + 1][1] = expectedBus.routeNo;
-            displayTableData[i + 1][2] = expectedBus.destination;
-            displayTableData[i + 1][3] = expectedBus.time.toString();
-            displayTableData[i + 1][4] = getStatusDisplayValue(expectedBus.status, expectedBus.delay);
-        }
-
-
-        for (String[] rowData : displayTableData) {
-            System.out.printf("%-10s%-10s%-21s%-10s%-10s%n",
-                    rowData[0], rowData[1], rowData[2], rowData[3], rowData[4]);
-        }
-
+        return busesToDisplay.subList(0, Math.min(10, busesToDisplay.size()));
     }
 
     /**
@@ -347,6 +330,29 @@ public class BusStopDisplay implements BusInfoObserver {
             ExpectedBus bus = expectedBuses.get(busKey);
             bus.updateStatus(BusStatus.cancelled);
         }
+    }
+
+    /**
+     * Returns the ID of the bus stop.
+     *
+     * @return the bus stop ID
+     */
+    public String getId() { return this.id; }
+
+    /**
+     * Returns the name of the bus stop.
+     *
+     * @return the bus stop name
+     */
+    public String getName() { return this.name; }
+
+    /**
+     * Returns an unmodifiable map of the expected buses at this bus stop.
+     *
+     * @return an unmodifiable map of expected buses
+     */
+    public Map<String, ExpectedBus> getExpectedBuses() {
+        return Collections.unmodifiableMap(this.expectedBuses);
     }
 
 }
