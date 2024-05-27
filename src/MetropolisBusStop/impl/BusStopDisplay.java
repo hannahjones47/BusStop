@@ -248,7 +248,7 @@ public class BusStopDisplay implements BusInfoObserver {
 
             if ((eb.status == BusStatus.cancelled && eb.time.isBefore(t))
                     || (eb.time.plusMinutes(eb.delay + 3).isBefore(t))) {
-                iterator.remove(); // todo check this works?
+                iterator.remove();
             }
         }
 
