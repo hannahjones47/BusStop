@@ -290,7 +290,9 @@ public class BusStopDisplay implements BusInfoObserver {
 
         if (expectedBuses.containsKey(busKey)){
             ExpectedBus bus = expectedBuses.get(busKey);
-            this.expectedBuses.remove(busKey);
+            if (bus.status != BusStatus.cancelled) {
+                this.expectedBuses.remove(busKey);
+            }
         }
     }
 

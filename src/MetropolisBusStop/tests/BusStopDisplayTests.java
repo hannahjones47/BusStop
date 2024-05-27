@@ -270,5 +270,3 @@ class BusStopDisplayTests {
         assertEquals("cancelled", busStopDisplay.getStatusDisplayValue(BusStatus.cancelled, 0));
     }
 }
-
-// todo test that exceptions are thrown, e.g. expected route can't have a negative delay or journeyNo
