@@ -9,4 +9,8 @@ This project was developed as part of my university coursework. The goal was to 
 ✅ **Simulates a central bus tracking system**, keeping the display updated every **15 seconds**.  
 
 ## 🏆 Why It Matters  
-This project was designed to mimic a **real-world transportation system**, testing my ability to **design scalable software**, work with **real-time data** and apply **efficient software engineering principles**.  
+This project was designed to mimic a **real-world transportation system**, testing my ability to **design scalable software**, work with **real-time data** and apply **efficient software engineering principles**. 
+
+## 🥇 Grade achieved = First
+
+**Developed by Hannah Jones**  
